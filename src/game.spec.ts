@@ -53,4 +53,14 @@ describe("Game", function () {
       "room exists"
     );
   });
+
+  it("should show the description for the connected room when i look", () => {
+    const game = new Game(initialRoom);
+
+    const nextRoom = game.addRoom("another room", "its empty");
+
+    initialRoom.addConnection("W", nextRoom);
+
+    expect(game.look('W')).toBe(nextRoom.description)
+  });
 });
