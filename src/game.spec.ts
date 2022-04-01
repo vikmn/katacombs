@@ -1,8 +1,9 @@
 class Room {
   constructor(public title: string, public description: string) {}
+  connections:Record<string, Room> = {}
 
   addConnection(direction: string, room: Room) {
-    throw new Error("not implemented");
+    this.connections[direction] = room
   }
 }
 
@@ -14,7 +15,8 @@ class Game {
   };
 
   move(direction: string): Room {
-    throw new Error("not implemented");
+    this.currentRoom = this.currentRoom.connections[direction]
+    return this.currentRoom;
   }
 }
 
