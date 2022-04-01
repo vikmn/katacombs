@@ -1,76 +1,56 @@
-class Room {
-  constructor(public title: string, public description: string) {}
-  connections:Record<string, Room> = {}
-
-  addConnection(direction: string, room: Room) {
-    this.connections[direction] = room
-  }
-}
-
-class Game {
-  constructor(private currentRoom: Room) {}
-
-  current = (): Room => {
-    return this.currentRoom;
-  };
-
-  move(direction: string): Room {
-    this.currentRoom = this.currentRoom.connections[direction]
-    return this.currentRoom;
-  }
-}
+import { Game } from "./Game";
+import { Room } from "./Room";
 
 describe("Game", function () {
-  it("should be initialised to the starting room", function () {
-    const initialRoom = new Room(
+  let initialRoom: Room;
+
+  beforeEach(() => {
+    initialRoom = new Room(
       "LOST IN SHOREDITCH.",
       "YOU ARE STANDING AT THE END OF BRICK LANE BEFORE A SMALL BRICK BUILDING CALLED THE OLD TRUMAN BREWERY. \n" +
         "AROUND YOU IS A FOREST OF INDIAN RESTAURANTS. \n" +
         "A SMALL STREAM OF CRAFTED BEER FLOWS OUT OF THE BUILDING AND DOWN A GULLY."
     );
+  });
 
+  it("should be initialised to the starting room", function () {
     const game = new Game(initialRoom);
-    const room = game.current();
+    const currentRoom = game.current();
 
-    expect(room.title).toBe("LOST IN SHOREDITCH.");
-    expect(room.description).toBe(
-      "YOU ARE STANDING AT THE END OF BRICK LANE BEFORE A SMALL BRICK BUILDING CALLED THE OLD TRUMAN BREWERY. \n" +
-        "AROUND YOU IS A FOREST OF INDIAN RESTAURANTS. \n" +
-        "A SMALL STREAM OF CRAFTED BEER FLOWS OUT OF THE BUILDING AND DOWN A GULLY."
-    );
+    expect(currentRoom).toBe(initialRoom);
   });
 
   it("should move to a new room", () => {
-    const initialRoom = new Room(
-      "LOST IN SHOREDITCH.",
-      "YOU ARE STANDING AT THE END OF BRICK LANE BEFORE A SMALL BRICK BUILDING CALLED THE OLD TRUMAN BREWERY. \n" +
-        "AROUND YOU IS A FOREST OF INDIAN RESTAURANTS. \n" +
-        "A SMALL STREAM OF CRAFTED BEER FLOWS OUT OF THE BUILDING AND DOWN A GULLY."
-    );
-
-    const nextRoom = new Room("another room", "its empty");
-
-    initialRoom.addConnection("L", nextRoom);
-
     const game = new Game(initialRoom);
 
-    const currentRoom = game.move("L");
+    const nextRoom = game.addRoom("another room", "its empty");
+    initialRoom.addConnection("W", nextRoom);
+
+    const currentRoom = game.move("W");
 
     expect(currentRoom).toBe(nextRoom);
   });
+
+  it("should move up to a new room", () => {
+    const game = new Game(initialRoom);
+    const nextRoom = game.addRoom("another room", "its empty");
+
+    initialRoom.addConnection("U", nextRoom);
+
+    const currentRoom = game.move("U");
+
+    expect(currentRoom).toBe(nextRoom);
+  });
+
+  it("should not be able to add a room with an existing title", () => {
+    const game = new Game(initialRoom);
+
+    const nextRoom = game.addRoom("another room", "its empty");
+
+    initialRoom.addConnection("W", nextRoom);
+
+    expect(() => game.addRoom("another room", "its empty")).toThrowError(
+      "room exists"
+    );
+  });
 });
-
-/**\
- 
-const startingRoom = new Room(blah blah)
-const nextRoom = new Room(other room)
-
-startingRoom.addConnection("L", nextRoom)
-nextRoom.addConnection("R", startingRoom)
- 
-const game = new Game(startingRoom)
-
-game.move("L")
-
- 
- **/
