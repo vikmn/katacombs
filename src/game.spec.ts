@@ -1,5 +1,9 @@
 class Room {
   constructor(public title: string, public description: string) {}
+
+  addConnection(direction: string, room: Room) {
+    throw new Error("not implemented");
+  }
 }
 
 class Game {
@@ -8,6 +12,10 @@ class Game {
   current = (): Room => {
     return this.currentRoom;
   };
+
+  move(direction: string): Room {
+    throw new Error("not implemented");
+  }
 }
 
 describe("Game", function () {
